@@ -1,0 +1,71 @@
+radio button for car and bikes
+vehical = selected type.
+_______________________________________________________________
+Queries:
+
+--x1-records of a vehical (time, date .. tuples) by reg-number
+
+create or alter procedure record_Vehicle
+    @regno nvarchar(20)
+as
+Begin
+    select * from VOZILO_DB.dbo.VEHICLE as V,VOZILO_DB.dbo.FREQUENCY as F where (V.REGNO  = F.REG_NO) and (V.REGNO = @regno);
+end;
+______________________________________________________________
+--x2-most visited vehical in desc order
+
+create procedure GetList
+	@TOV nvarchar (4)
+AS
+BEGIN
+	select Reg_no,count(reg_no) FROM Vozilo.dbo.frequency,Vozilo.dbo.Vehicle WHERE Vozilo.dbo.frequency.Exit_Time is NULL and Vozilo.dbo.frequency.REG_NO=Vozilo.dbo.VEHICLE.REGNO and Vozilo.dbo.VEHICLE.TOV=@TOV  group by (reg_no) order by (reg_no) desc;
+END;
+
+exec Getlist 1;
+
+____________________________________________________________________
+--x3-cplc uncleared vehical
+
+Create or Alter procedure C_Unclear
+AS
+BEGIN
+    select * from VOZILO_DB.dbo.CPLC_UNCLEAR;    
+END;
+
+_______________________________________________________________________
+--x4-present vehicals in parking lot
+
+create procedure GetInVehicles
+    @TOV nvarchar(4)
+AS
+BEGIN
+	select * FROM Vozilo.dbo.frequency,Vozilo.dbo.VEHICLE WHERE Vozilo.dbo.frequency.REG_NO=Vozilo.dbo.VEHICLE.REGNO and
+	Vozilo.dbo.frequency.Exit_Time is NULL and Vozilo.dbo.VEHICLE.TOV=@TOV;
+END;	
+
+EXEC GetInVehicles 1;
+_______________________________________________________________________
+
+--x5-records by date
+
+create procedure GetDates
+		@date date,@TOV nvarchar(4)
+as
+BEGIN
+	SELECT * FROM Vozilo.dbo.frequency,Vozilo.dbo.VEHICLE WHERE Vozilo.dbo.frequency.REG_NO=Vozilo.dbo.VEHICLE.REGNO and
+	Vozilo.dbo.frequency.Current_Date_ = @date and Vozilo.dbo.VEHICLE.TOV=@TOV;
+END;
+
+
+exec GetDates @date='2018-12-04',@TOV=1;
+
+______________________________________________________________________
+--x6-AFR Vehicles
+
+create procedure GetAFR
+as
+BEGIN
+	select * from Vozilo.dbo.AFR;
+END;
+
+exec GetAFR;
